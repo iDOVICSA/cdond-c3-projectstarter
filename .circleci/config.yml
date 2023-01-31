@@ -148,9 +148,33 @@ jobs:
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
+  configure-infrastructure:
+    docker:
+      - image: python:3.8-alpine3.15 
+    steps:
+      - checkout
+      - add_ssh_keys: 
+          fingerprints: ["5f:e6:e8:5e:71:eb:de:e0:a6:89:c1:ca:01:06:a2:25"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+            apk add --update --no-cache python3 py3-pip
+            /usr/local/bin/python -m pip install --upgrade pip
+            pip install awscli
+      - run:
+          name: run configure server role 
+          command: 
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   uda_people_pipeline:
     jobs:
       - deploy-infrastructure
+      - configure-infrastructure :
+          requires: [deploy-infrastructure]
