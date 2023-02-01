@@ -166,9 +166,8 @@ jobs:
             pip install awscli
       - run:
           name: run configure server role 
-          command: 
+          command: |
             cd .circleci/ansible
-            cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
 
 # Invoke jobs via workflows
