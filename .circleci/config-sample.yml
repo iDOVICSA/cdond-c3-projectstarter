@@ -209,7 +209,7 @@ jobs:
     docker:
       # Lightweight Docker image 
     steps:
-      - image: circleci/node:13.8.0
+      # Checkout code from git
       - run:
           name: Install dependencies
           command: |
