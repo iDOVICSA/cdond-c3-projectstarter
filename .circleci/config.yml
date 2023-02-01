@@ -271,13 +271,14 @@ jobs:
 workflows:
   uda_people_pipeline:
     jobs:
-      - build-frontend
-      - build-backend
-      - deploy-infrastructure:
-          requires: [build-frontend, build-backend]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - deploy-frontend:
-          requires: [configure-infrastructure]
-      - deploy-backend:
-          requires: [configure-infrastructure]
+      # - build-frontend
+      # - build-backend
+      # - deploy-infrastructure:
+      #     requires: [build-frontend, build-backend]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - deploy-frontend:
+      #     requires: [configure-infrastructure]
+      # - deploy-backend:
+      #     requires: [configure-infrastructure]
+        - run-migrations
