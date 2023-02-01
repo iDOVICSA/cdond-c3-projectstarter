@@ -19,7 +19,9 @@ commands:
             aws s3 rm s3://udapeople-<< parameters.workflow_id >> --recursive
             aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.workflow_id >> 
             aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.workflow_id >>
-            
+
+
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
@@ -230,6 +232,41 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
 
+  deploy-backend:
+    docker:
+      - image: python:3.8-alpine3.15
+    steps:
+      - checkout
+      - add_ssh_keys: 
+          fingerprints: ["48:2b:dc:7b:92:72:30:8f:a1:ca:39:b5:5e:7f:91:47"]
+      - attach_workspace:
+          at: ~/
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update --no-cache tar gzip nodejs npm aws-cli ansible
+      - run:
+          name: Package Backend
+          command: |
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            tar -C backend -czvf build-artifact.tar.gz .
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            mv build-artifact.tar.gz .circleci/ansible/roles/deploy/files/build-artifact.tar.gz
+      - run:
+          name: Deploy backend
+          command: |
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt deploy-backend.yml 
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations
+
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -239,4 +276,6 @@ workflows:
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - deploy-frontend:
+          requires: [configure-infrastructure]
+      - deploy-backend:
           requires: [configure-infrastructure]
