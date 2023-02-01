@@ -198,9 +198,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt update && sudo apt upgrade
-            sudo apt install nodejs npm
-            sudo apt-get install python python-pip tar gzip
+            apt update &&  apt upgrade
+            apt install nodejs npm
+            apt-get install python python-pip tar gzip
             python -m pip install --user ansible
             cd frontend 
             npm install
