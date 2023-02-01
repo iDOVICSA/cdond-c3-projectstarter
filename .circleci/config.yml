@@ -112,7 +112,7 @@ jobs:
             npm audit fix --audit-level=critical
 
   deploy-infrastructure:
-    docker:
+    docker: 
       - image: amazon/aws-cli
     steps:
       - checkout
@@ -122,17 +122,18 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --tags project=udapeople-backend \
               --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} \
+              --tags project=udapeople
+
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              --tags project=udapeople-frontend \
               --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} \
+              --tags project=udapeople
       - run:
           name: Add back-end ip to ansible inventory
           command: |
@@ -144,9 +145,8 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-      # Here's where you will add some code to rollback on failure 
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   configure-infrastructure:
     docker:
@@ -154,7 +154,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys: 
-          fingerprints: ["38:7d:06:55:fb:36:60:83:84:f1:c8:e8:90:dc:85:af"]
+          fingerprints: ["5f:e6:e8:5e:71:eb:de:e0:a6:89:c1:ca:01:06:a2:25"]
       - attach_workspace:
           at: ~/
       - run:
@@ -165,13 +165,10 @@ jobs:
             apk add --update --no-cache python3 py3-pip
             /usr/local/bin/python -m pip install --upgrade pip
       - run:
-          name: Configure server
+          name: run configure server role 
           command: |
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
-      # Here's where you will add some code to rollback on failure  
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
