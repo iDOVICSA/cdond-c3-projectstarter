@@ -167,7 +167,7 @@ jobs:
       - run:
           name: run configure server role 
           command: |
-            cd .circleci/ansible
+            cd ~/project/.circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
 
 # Invoke jobs via workflows
