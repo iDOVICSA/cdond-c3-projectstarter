@@ -284,11 +284,9 @@ jobs:
               --filters "Name=tag:project,Values=udapeople-backend" \
               --output text
             )   
+            # Fetch and prepare the BACKEND_IP env var
             export API_URL="http://${BACKEND_IP}:3030"         
             echo "${API_URL}"             
-      - run:
-          name: Backend smoke test.
-          command: |
             if curl "${API_URL}/api/status" | grep "ok"
             then
                 return 0
@@ -306,8 +304,6 @@ jobs:
             else
               return 1
             fi
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
 
 # Invoke jobs via workflows
