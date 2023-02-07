@@ -388,23 +388,23 @@ jobs:
 workflows:
   uda_people_pipeline:
     jobs:
-      # - build-frontend
-      # - build-backend
-      # - test-backend:
-      #     requires: [build-backend]
-      # - deploy-infrastructure:
-      #     requires: [build-frontend, build-backend]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [configure-infrastructure]
-      # - deploy-backend:
-      #     requires: [configure-infrastructure]
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update
-         # requires: [smoke-test]
+      - build-frontend
+      - build-backend
+      - test-backend:
+          requires: [build-backend]
+      - deploy-infrastructure:
+          requires: [build-frontend, build-backend]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [configure-infrastructure]
+      - deploy-backend:
+          requires: [configure-infrastructure]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+         requires: [smoke-test]
       - cleanup:
           requires: [cloudfront-update]
